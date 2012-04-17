@@ -389,7 +389,7 @@ stats_dump(struct context *ctx)
                     log_stderr("%14c", ':');
                 }
                 bin_time = i * HIST_BIN_WIDTH;
-                log_stderr("%16.1f %u", 1e3 * bin_time, stats->req_rsp_hist[i]);
+                log_stderr("%16.4f %u", 1e3 * bin_time, stats->req_rsp_hist[i]);
             }
             if (stats->req_rsp_hist[i - 1] == 0) {
                 log_stderr("%14c", ':');
