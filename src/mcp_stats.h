@@ -87,6 +87,7 @@ struct stats {
     double        rsp_xfer_max;                /* maximum response transfer time */
 
     uint32_t      rsp_type[RSP_MAX_TYPES];     /* # response type */
+    uint64_t      ncall_create_failed; /* Number of calls that were issued, but couldn't be created */
 };
 
 void stats_init(struct context *ctx);

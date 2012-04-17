@@ -467,6 +467,8 @@ stats_dump(struct context *ctx)
                stats->nsock_fdunavail, stats->nsock_ftabfull,
                stats->nsock_addrunavail, stats->nsock_other_error);
 
+    log_stderr("Number of calls issued, but couldn't be created: %"PRIu64,
+               stats->ncall_create_failed);
     /*
      * Resource usage section
      * 1. CPU utilization
