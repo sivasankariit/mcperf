@@ -182,7 +182,7 @@ _log_stderr(const char *fmt, ...)
 
     buf[len++] = '\n';
 
-    n = mcp_write(STDERR_FILENO, buf, len);
+    n = mcp_write(STDOUT_FILENO, buf, len);
     if (n < 0) {
         l->nerror++;
     }
