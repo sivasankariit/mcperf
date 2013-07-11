@@ -196,6 +196,19 @@ core_connect(struct context *ctx, struct conn *conn)
         goto error;
     }
 
+    if(opt->bind_addr) {
+        printf("binding sock: %x\n", opt->bind_addr);
+        struct sockaddr_in tmp;
+        bzero(&tmp, sizeof(tmp));
+        tmp.sin_family = si->family;
+        tmp.sin_port = 0;
+        tmp.sin_addr.s_addr = opt->bind_addr;
+        if(bind(conn->sd, (struct sockaddr *)&tmp, sizeof(tmp)) < 0) {
+            log_debug(LOG_ERR, "couldn't bind address\n");
+            goto error;
+        }
+    }
+
     if (!opt->disable_nodelay) {
         status = mcp_set_tcpnodelay(conn->sd);
         if (status != MCP_OK) {

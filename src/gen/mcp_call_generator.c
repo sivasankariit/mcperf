@@ -44,6 +44,7 @@ issue_call(struct context *ctx, void *arg)
     call = call_get(conn);
     if (call == NULL) {
         conn->ncall_create_failed++;
+        ctx->stats.ncall_create_failed++;
         goto done;
     }
 

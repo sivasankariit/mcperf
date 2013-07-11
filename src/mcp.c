@@ -99,10 +99,12 @@ static struct option long_options[] = {
     { "conn-rate",          required_argument,  NULL,   'r' },
     { "call-rate",          required_argument,  NULL,   'R' },
     { "sizes",              required_argument,  NULL,   'z' },
+    { "bind",               required_argument,  NULL,   'i' },
+    { "time",               required_argument,  NULL,   'T' },
     { NULL,                 0,                  NULL,    0  }
 };
 
-static char short_options[] = "hVv:o:s:p:Ht:l:b:B:Dm:e:qP:c:n:N:r:R:z:";
+static char short_options[] = "hVv:o:s:p:Ht:l:b:B:Dm:e:qP:c:n:N:r:R:z:i:T:";
 
 static void
 mcp_show_usage(void)
@@ -114,6 +116,7 @@ mcp_show_usage(void)
         "              [-m method] [-e expiry] [-q] [-P prefix]" CRLF
         "              [-c client] [-n num-conns] [-N num-calls]" CRLF
         "              [-r conn-rate] [-R call-rate] [-z sizes]" CRLF
+        "              [-i bind-ip] [-T time]" CRLF
         "" CRLF
         "Options:" CRLF
         "  -h, --help            : this help" CRLF
@@ -155,6 +158,8 @@ mcp_show_usage(void)
         "  -r, --conn-rate=R     : set the connection creation rate (default: %s conns/sec) "CRLF
         "  -R, --call-rate=R     : set the call creation rate (default: %s calls/sec)" CRLF
         "  -z, --sizes=R         : set the distribution for item sizes (default: %s bytes)" CRLF
+        "  -i, --bind=IP         : bind source IP address" CRLF
+        "  -T, --time=T          : Run for T seconds" CRLF
         "  ...",
         MCP_CLIENT_ID, MCP_CLIENT_N, MCP_NUM_CONNS, MCP_NUM_CALLS,
         MCP_CONN_DIST_STR, MCP_CALL_DIST_STR, MCP_SIZE_DIST_STR
@@ -173,6 +178,7 @@ mcp_show_usage(void)
         "  D is set to 'e', an exponential distibution with mean interval of R1 is used" CRLF
         "  D is set to 'u', a uniform distribution over interval [R1, R2) is used" CRLF
         "  R is 0, the next request or connection is created after the previous one completes" CRLF
+        "  T is 0: runs till all requests are generated.  Otherwise, stop after T seconds" CRLF
         "  "
         );
 }
@@ -557,6 +563,19 @@ mcp_get_options(struct context *ctx, int argc, char **argv)
             }
             break;
 
+        case 'i':
+            opt->bind_addr = inet_addr(optarg);
+            printf("Binding to %s\n", optarg);
+            break;
+
+        case 'T':
+            opt->time = mcp_atod(optarg);
+            if(opt->time < 0) {
+                printf("Time cannot be negative!  Ignoring and setting to 0\n");
+                opt->time = 0;
+            }
+            break;
+
         case '?':
             switch (optopt) {
             case 'o':
@@ -659,12 +678,18 @@ static void
 mcp_run(struct context *ctx)
 {
     rstatus_t status;
+    double start = timer_now();
+    struct opt *opt = &ctx->opt;
 
     core_start(ctx);
 
     for (;;) {
         status = core_loop(ctx);
         if (status != MCP_OK) {
+            break;
+        }
+        if (opt->time > 0 && timer_now() - start > opt->time) {
+            core_stop(ctx);
             break;
         }
     }

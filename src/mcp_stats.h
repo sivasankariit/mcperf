@@ -22,8 +22,8 @@
 #include <sys/resource.h>
 
 #define HIST_MAX_TIME  100                     /* max time in sec (histogram resolution) */
-#define HIST_BIN_WIDTH 1e-3                    /* bin width in sec (granularity) */
-#define HIST_NUM_BINS  (HIST_MAX_TIME * 1000)  /* # bins */
+#define HIST_BIN_WIDTH 1e-5                    /* bin width in sec (granularity) */
+#define HIST_NUM_BINS  (HIST_MAX_TIME * 10000)  /* # bins */
 
 struct stats {
     struct rusage rusage_start;                /* resource usage at start */
@@ -87,6 +87,7 @@ struct stats {
     double        rsp_xfer_max;                /* maximum response transfer time */
 
     uint32_t      rsp_type[RSP_MAX_TYPES];     /* # response type */
+    uint64_t      ncall_create_failed; /* Number of calls that were issued, but couldn't be created */
 };
 
 void stats_init(struct context *ctx);

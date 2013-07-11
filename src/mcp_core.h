@@ -134,6 +134,8 @@ struct opt {
     unsigned          print_rusage:1;    /* print rusage? */
     unsigned          linger:1;          /* linger? */
     unsigned          use_noreply:1;     /* use_noreply? */
+    in_addr_t         bind_addr;         /* src IP to bind to.. */
+    double            time;              /* Run for time seconds */
 };
 
 struct context {

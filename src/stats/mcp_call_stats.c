@@ -84,7 +84,8 @@ call_recv_start(struct context *ctx, event_type_t type, void *rarg, void *carg)
     ASSERT(type == EVENT_CALL_RECV_START);
 
     call->rsp.recv_start = timer_now();
-    req_rsp_time = timer_now() - call->req.send_start;
+    // req_rsp_time = timer_now() - call->req.send_start;
+    req_rsp_time = timer_now() - call->req.issue_start;
 
     stats->req_rsp_sum += req_rsp_time;
     stats->req_rsp_sum2 += SQUARE(req_rsp_time);
